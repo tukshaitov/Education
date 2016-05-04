@@ -156,7 +156,7 @@ public class ReentrantLockTest {
             private int id = 0;
             @Override
             public void run() {
-                while (true) {
+                MAIN: while (true) {
                     lock.lock();
                     if(Thread.currentThread().isInterrupted()){
                         lock.unlock();
@@ -171,7 +171,7 @@ public class ReentrantLockTest {
                         } catch (InterruptedException e) {
                             System.out.println("Thread " + Thread.currentThread().getName() + " method condition.await() generates InterruptedException.");
                             lock.unlock();
-                            break;
+                            break MAIN;
                         }
                     }
                     try {
@@ -197,7 +197,7 @@ public class ReentrantLockTest {
         Thread receiver = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                MAIN: while (true) {
                     lock.lock();
                     if(Thread.currentThread().isInterrupted()){
                         lock.unlock();
@@ -211,7 +211,7 @@ public class ReentrantLockTest {
                         } catch (InterruptedException e) {
                             System.out.println("Thread " + Thread.currentThread().getName() + " method condition.await() generates InterruptedException.");
                             lock.unlock();
-                            break;
+                            break MAIN;
                         }
                     }
                     try {
