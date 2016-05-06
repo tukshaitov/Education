@@ -157,39 +157,41 @@ public class ReentrantLockTest {
             @Override
             public void run() {
                 MAIN: while (true) {
-                    lock.lock();
+
                     if(Thread.currentThread().isInterrupted()){
-                        lock.unlock();
                         System.out.println("Thread " + Thread.currentThread().getName() + " is interrupted.");
                         break;
                     }
 
-                    OrderStatus status = order.getStatus();
-                    while(status == OrderStatus.SENT) {
+                    lock.lock();
+                    while(order.getStatus() == OrderStatus.SENT) {
                         try {
                             condition.await();
                         } catch (InterruptedException e) {
-                            System.out.println("Thread " + Thread.currentThread().getName() + " method condition.await() generates InterruptedException.");
+                            System.out.println("Thread " + Thread.currentThread().getName() +
+                                    " method condition.await() generates InterruptedException. Thread isInterrupted: " + Thread.currentThread().isInterrupted());
                             lock.unlock();
                             break MAIN;
                         }
                     }
+                    lock.unlock();
+
                     try {
                         int sleep = ThreadLocalRandom.current().nextInt(500, 1000 + 1);
                         Thread.sleep(sleep);
-                        order.setId(id++);
-                        order.setStatus(OrderStatus.SENT);
-                        System.out.println("Order with number: " + order.getId() + " was sent.");
-                        condition.signalAll();
                     }
                     catch (InterruptedException e) {
                         System.out.println("Thread " + Thread.currentThread().getName() + " method sleep generates InterruptedException.");
                         break;
                     }
-                    finally {
-                        lock.unlock();
-                    }
-                }
+
+                    lock.lock();
+                    order.setId(id++);
+                    order.setStatus(OrderStatus.SENT);
+                    System.out.println("Order with number: " + order.getId() + " was sent.");
+                    condition.signalAll();
+                    lock.unlock();
+                 }
             }
         }, "Sender");
 
@@ -198,37 +200,38 @@ public class ReentrantLockTest {
             @Override
             public void run() {
                 MAIN: while (true) {
-                    lock.lock();
+
                     if(Thread.currentThread().isInterrupted()){
-                        lock.unlock();
                         System.out.println("Thread " + Thread.currentThread().getName() + " is interrupted.");
                         break;
                     }
-                    OrderStatus status = order.getStatus();
-                    while(status == OrderStatus.NONE || status == OrderStatus.RECEIVED) {
+
+                    lock.lock();
+                    while(order.getStatus() == OrderStatus.NONE || order.getStatus() == OrderStatus.RECEIVED) {
                         try {
                             condition.await();
                         } catch (InterruptedException e) {
-                            System.out.println("Thread " + Thread.currentThread().getName() + " method condition.await() generates InterruptedException.");
+                            System.out.println("Thread " + Thread.currentThread().getName() +
+                                    " method condition.await() generates InterruptedException. Thread isInterrupted: " + Thread.currentThread().isInterrupted());
                             lock.unlock();
                             break MAIN;
                         }
                     }
+                    lock.unlock();
+
                     try {
                         int sleep = ThreadLocalRandom.current().nextInt(500, 3000 + 1);
-                        try {
-                            Thread.sleep(sleep);
-                        } catch (InterruptedException e) {
-                            System.out.println("Thread " + Thread.currentThread().getName() + " method sleep generates InterruptedException.");
-                            break;
-                        }
-
-                        order.setStatus(OrderStatus.RECEIVED);
-                        System.out.println("Order with number: " + order.getId() + " was received.");
-                        condition.signalAll();
-                    } finally {
-                        lock.unlock();
+                        Thread.sleep(sleep);
+                    } catch (InterruptedException e) {
+                        System.out.println("Thread " + Thread.currentThread().getName() + " method sleep generates InterruptedException.");
+                        break;
                     }
+
+                    lock.lock();
+                    order.setStatus(OrderStatus.RECEIVED);
+                    System.out.println("Order with number: " + order.getId() + " was received.");
+                    condition.signalAll();
+                    lock.unlock();
                 }
             }
         }, "Receiver");
@@ -257,7 +260,7 @@ public class ReentrantLockTest {
         }
 
         System.out.println("lock.isHeldByCurrentThread(): " + lock.isHeldByCurrentThread());
-        System.out.println("lock.isLocked(): " +lock.isLocked());
+        System.out.println("lock.isLocked(): " + lock.isLocked());
 
         sender.interrupt();
         receiver.interrupt();
