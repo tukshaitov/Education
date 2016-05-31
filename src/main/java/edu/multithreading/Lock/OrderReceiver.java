@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 public class OrderReceiver implements Runnable {
     private Lock readLock;
     private Order order;
+    private int sleep;
 
     public OrderReceiver() {
     }
@@ -26,6 +27,14 @@ public class OrderReceiver implements Runnable {
     public void run() {
         while (true) {
             readLock.lock();
+
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException e) {
+                readLock.unlock();
+                return;
+            }
+
             if(Thread.currentThread().isInterrupted()){
                 readLock.unlock();
                 System.out.println("Thread " + Thread.currentThread().getName() + " is interrupted.");
