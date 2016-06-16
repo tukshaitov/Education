@@ -12,13 +12,19 @@ public class OrderBroadcaster implements Runnable {
     private Order order;
     private int sleepTime;
 
+    public OrderBroadcaster(ReadWriteLock lock, Order order, int sleepTime) {
+        this.lock = lock;
+        this.order = order;
+        this.sleepTime = sleepTime;
+    }
+
     @Override
     public void run() {
         while (true) {
             lock.readLock().lock();
             try {
                 Thread.sleep(sleepTime);
-                System.out.println("Broadcaster " + Thread.currentThread().getName() + " send order with id " + order.getId() +".");
+                System.out.println("Broadcaster " + Thread.currentThread().getName() + " displayed order with id " + order.getId() +".");
             } catch (InterruptedException e) {
                 System.out.println("Thread " + Thread.currentThread().getName() + " is interrupted.");
             } finally {
