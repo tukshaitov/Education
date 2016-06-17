@@ -8,12 +8,5 @@
     <entry_points version="2.0" />
   </component>
   <component name="IdProvider" IDEtalkID="8DB59DA4B2E6E3985DBBC45F7F020B8A" />
-  <component name="MavenProjectsManager">
-    <option name="originalFiles">
-      <list>
-        <option value="$PROJECT_DIR$/pom.xml" />
-      </list>
-    </option>
-  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="false" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
 </project>
