@@ -14,19 +14,22 @@ public class ReentrantReadWriteLockTest {
 
     public static void main(String ... args) throws InterruptedException {
 
-        /*new Thread(new Runnable() {
+        /*
+        Condition condition = lock.writeLock().newCondition();
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                lock.writeLock().lock();  // Использовать read lock и write lock condition нельзя.
+                lock.readLock().lock();  // Использовать read lock и write lock condition нельзя.
                 try {
                     condition.await(2, TimeUnit.SECONDS);
                     System.out.println("Condition test OK.");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                lock.writeLock().unlock();
+                lock.readLock().unlock();
             }
         }).start();*/
+
 
         Thread orderFactory = new Thread(new Runnable() {
             private int id = 0;
@@ -34,13 +37,11 @@ public class ReentrantReadWriteLockTest {
             public void run() {
                 latch.countDown();
                 while (true) {
-                    OrderStatus status = order.getStatus();
-                    lock.writeLock().lock();
-
                     try {
-                        int sleep = ThreadLocalRandom.current().nextInt(2000, 5000 + 1);
+                        int sleep = ThreadLocalRandom.current().nextInt(500, 1000);
                         System.out.println("Before produce order we will wait: " + sleep / 1000 + " seconds.");
                         Thread.sleep(sleep);
+                        lock.writeLock().lock();
                         order.setId(id++);
                         System.out.println("Order with number: " + order.getId() + " was factored.");
                     }
@@ -56,16 +57,17 @@ public class ReentrantReadWriteLockTest {
         }, "OrderFactory");
 
         orderFactory.start();
-        latch.await();
 
         OrderBroadcaster [] broadcasters = {
-                new OrderBroadcaster(lock, order,  5000),
-                new OrderBroadcaster(lock, order,  8000),
-                new OrderBroadcaster(lock, order,  2000),
-                new OrderBroadcaster(lock, order,  3000),
-                new OrderBroadcaster(lock, order,  6000),
-                new OrderBroadcaster(lock, order,  11000)
+                new OrderBroadcaster(lock, order,  500),
+                new OrderBroadcaster(lock, order,  800),
+                new OrderBroadcaster(lock, order,  200),
+                new OrderBroadcaster(lock, order,  300),
+                new OrderBroadcaster(lock, order,  600),
+                new OrderBroadcaster(lock, order,  1100)
         };
+
+        latch.await();
 
         for(int i = 0; i < broadcasters.length; i++){
             new Thread(broadcasters[i], "broadcaster_" + i).start();

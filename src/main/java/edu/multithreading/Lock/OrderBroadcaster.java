@@ -18,9 +18,9 @@ public class OrderBroadcaster implements Runnable {
 
     @Override
     public void run() {
+
         while (true) {
             lock.readLock().lock();
-            System.out.println("Checking....");
             try {
                 Thread.sleep(sleepTime);
                 System.out.println("Broadcaster " + Thread.currentThread().getName() + " displayed order with id " + order.getId() +".");
@@ -28,6 +28,7 @@ public class OrderBroadcaster implements Runnable {
                 System.out.println("Thread " + Thread.currentThread().getName() + " is interrupted.");
                 break;
             } finally {
+
                 lock.readLock().unlock();
             }
         }
