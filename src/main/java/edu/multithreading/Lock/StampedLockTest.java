@@ -9,16 +9,16 @@ public class StampedLockTest {
     private static StampedLock stampedLock = new StampedLock();
     public static void main(String ... args){
 
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 long stamp = stampedLock.readLock();
                 System.out.println("First read_" + stamp);
                 stampedLock.unlockRead(stamp);
             }
-        }).start();
+        }).start();*/
 
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 long stamp = stampedLock.readLock();
@@ -40,9 +40,9 @@ public class StampedLockTest {
                 //}
             }
 
-        }).start();
+        }).start();*/
 
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 long stamp = stampedLock.writeLock();
@@ -54,20 +54,99 @@ public class StampedLockTest {
                 }
                 stampedLock.unlockWrite(stamp);
             }
-        }).start();
+        }).start();*/
 
 
-        try {
+        /*try {
             Thread.sleep(4000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        //long stamp = stampedLock.writeLock();
-        //System.out.println("Second write_" + stamp);
-        System.out.println("Try to convert_" + stampedLock.tryConvertToWriteLock(384));
+        long stamp = 0;
 
-        long stamp = stampedLock.writeLock();
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp));
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp));
+        stampedLock.unlock(stamp+1);
+        stampedLock.unlock(stamp+1);
+
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp+1));
         stampedLock.unlock(stamp);
+
+        stamp = stampedLock.writeLock();
+        System.out.println("Second write_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToWriteLock(stamp+1));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp+1));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp));
+        stampedLock.unlock(stamp);
+
+
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.readLock();
+        System.out.println("Second read_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToReadLock(stamp));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.writeLock();
+        System.out.println("Second write_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToWriteLock(stamp));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.writeLock();
+        System.out.println("Second write_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToWriteLock(stamp));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.writeLock();
+        System.out.println("Second write_" + stamp);
+        System.out.println("Try to convert_" + stampedLock.tryConvertToWriteLock(stamp));
+        stampedLock.unlock(stamp);
+
+        stamp = stampedLock.writeLock();
+        System.out.println("Second write_" + stamp);
+        stamp = stampedLock.tryConvertToReadLock(stamp);
+        stampedLock.unlockRead(stamp);
+        System.out.println("HELLO");
+
+        stamp = stampedLock.writeLock();
+        stamp = stampedLock.tryConvertToOptimisticRead(stamp);
+        System.out.println("Optimistic_" + stamp);
+
+        stamp = stampedLock.tryConvertToOptimisticRead(stamp);
+        System.out.println("Optimistic_" + stamp);
+        stamp = stampedLock.tryOptimisticRead();
+        System.out.println("Optimistic_" + stamp);
+        stamp = stampedLock.tryOptimisticRead();
+        System.out.println("Optimistic_" + stamp);
+
+
     }
 }
