@@ -12,21 +12,52 @@ public class Main {
     private static CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
     public static void main(String[] args) {
 
-        Phaser phaser = new Phaser(2) {
+        final Phaser phaser = new Phaser(2) {
             protected boolean onAdvance(int phase, int parties) {
+                //System.out.println("onAdvance phase: " + phase + " parties: " + parties);
                 return false;
             }
         };
 
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //System.out.println(phaser.getPhase());
+                    phaser.awaitAdvanceInterruptibly(phaser.getPhase() , 1,  TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    //System.out.println(phaser.getPhase());
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("I am here.");
+            }
+        });
+
+        thread.start();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //System.out.println(phaser.toString());
+
         phaser.arrive();
-        phaser.arrive();
+        thread.interrupt();
+        System.out.println("Arrived Parties: " + phaser.getArrivedParties());
+
+        phaser.bulkRegister(100000);
+        //System.out.println("GetRegisteredParties: " + phaser.getRegisteredParties());
 
 
-        System.out.println("RegisteredParties: " + phaser.getRegisteredParties() + "");
-        System.out.println("ArrivedParties: " + phaser.getArrivedParties() + "");
-        System.out.println("UnarrivedParties: " + phaser.getUnarrivedParties() + "");
-        System.out.println("Фаза: " + phaser.getPhase() + " завершена");
-        System.out.println("Is Terminated: " + phaser.isTerminated());
+        //System.out.println("RegisteredParties: " + phaser.getRegisteredParties() + "");
+        //System.out.println("ArrivedParties: " + phaser.getArrivedParties() + "");
+        //System.out.println("UnarrivedParties: " + phaser.getUnarrivedParties() + "");
+        //System.out.println("Фаза: " + phaser.getPhase() + " завершена");
+        //System.out.println("Is Terminated: " + phaser.isTerminated());
 
 
         /*Phaser phaser = new Phaser(2);
