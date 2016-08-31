@@ -93,26 +93,45 @@ public class PhaseTest {
                     System.out.println("{6} Parent phaser OnAdvance phase: " + phase + " parties: " + parties);
                     return super.onAdvance(phase, parties);
                 }
-            }, childOne = new Phaser(parent, 1), childTwo = new Phaser(parent, 1),  childThree = new Phaser(parent, 2);
+            }, childOne = new Phaser(parent, 1), childTwo = new Phaser(parent, 1){
+                protected boolean onAdvance(int phase, int parties) {
+                    System.out.println("{6} ChildTwo phaser OnAdvance phase: " + phase + " parties: " + parties);
+                    return super.onAdvance(phase, parties);
+                }
+            }, childThree = new Phaser(parent, 3) {
+                protected boolean onAdvance(int phase, int parties) {
+                    System.out.println("{6} ChildThree phaser OnAdvance phase: " + phase + " parties: " + parties);
+                    return super.onAdvance(phase, parties);
+                }
+            };
 
             System.out.println("{6} Parent phaser RegisteredParties: " + parent.getRegisteredParties() +
                     " UnarrivedParties: " + parent.getUnarrivedParties() + " ArrivedParties: " + parent.getArrivedParties() + " Phase: " +
                     parent.getPhase() + " IsTerminated: " + parent.isTerminated());
 
+
             parent.arrive();
             parent.arrive();
+            childThree.arrive();
             parent.arrive();
 
             System.out.println("{6} Parent phaser RegisteredParties: " + parent.getRegisteredParties() +
                     " UnarrivedParties: " + parent.getUnarrivedParties() + " ArrivedParties: " + parent.getArrivedParties() + " Phase: " +
                     parent.getPhase() + " IsTerminated: " + parent.isTerminated());
-
 
             System.out.println("{6} ChildOne phaser RegisteredParties: " + childOne.getRegisteredParties() +
                     " UnarrivedParties: " + childOne.getUnarrivedParties() + " ArrivedParties: " + childOne.getArrivedParties() + " Phase: " +
                     childOne.getPhase() + " IsTerminated: " + childOne.isTerminated());
 
+            System.out.println("{6} ChildTwo phaser RegisteredParties: " + childTwo.getRegisteredParties() +
+                    " UnarrivedParties: " + childTwo.getUnarrivedParties() + " ArrivedParties: " + childTwo.getArrivedParties() + " Phase: " +
+                    childTwo.getPhase() + " IsTerminated: " + childTwo.isTerminated());
 
+            System.out.println("{6} ChildThree phaser RegisteredParties: " + childThree.getRegisteredParties() +
+                    " UnarrivedParties: " + childThree.getUnarrivedParties() + " ArrivedParties: " + childThree.getArrivedParties() + " Phase: " +
+                    childThree.getPhase() + " IsTerminated: " + childThree.isTerminated());
+
+            System.out.println();
             parent.arriveAndDeregister();
 
             System.out.println("{6} Parent phaser RegisteredParties: " + parent.getRegisteredParties() +
@@ -131,15 +150,11 @@ public class PhaseTest {
                     " UnarrivedParties: " + childThree.getUnarrivedParties() + " ArrivedParties: " + childThree.getArrivedParties() + " Phase: " +
                     childThree.getPhase() + " IsTerminated: " + childThree.isTerminated());
 
+            System.out.println();
+
             try {
                 childOne.arrive();
-                childTwo.arrive();
-
                 childThree.arrive();
-                childOne.arrive();
-                childThree.arrive();
-
-                childOne.arrive();
                 childTwo.arrive();
             }
             catch (IllegalStateException e) {
@@ -164,8 +179,34 @@ public class PhaseTest {
                     " UnarrivedParties: " + childThree.getUnarrivedParties() + " ArrivedParties: " + childThree.getArrivedParties() + " Phase: " +
                     childThree.getPhase() + " IsTerminated: " + childThree.isTerminated());
 
-            parent.arrive();
-            childTwo.arrive();
+            System.out.println();
+
+            try {
+                childOne.arrive();
+                childTwo.arrive();
+                childThree.arrive();
+                childThree.arrive();
+                childOne.arrive();
+                childTwo.arrive();
+
+                childThree.arrive();
+                childThree.arrive();
+                childThree.arrive();
+                childTwo.arrive();
+
+                childThree.arrive();
+                childThree.arrive();
+                childTwo.arrive();
+                childOne.arrive();
+
+                childThree.arrive();
+                childThree.arrive();
+                childThree.arrive();
+                childThree.arrive();
+            }
+            catch (IllegalStateException e) {
+                System.out.println(e.getMessage());
+            }
 
             System.out.println("{6} Parent phaser RegisteredParties: " + parent.getRegisteredParties() +
                     " UnarrivedParties: " + parent.getUnarrivedParties() + " ArrivedParties: " + parent.getArrivedParties() + " Phase: " +
@@ -182,32 +223,103 @@ public class PhaseTest {
             System.out.println("{6} ChildThree phaser RegisteredParties: " + childThree.getRegisteredParties() +
                     " UnarrivedParties: " + childThree.getUnarrivedParties() + " ArrivedParties: " + childThree.getArrivedParties() + " Phase: " +
                     childThree.getPhase() + " IsTerminated: " + childThree.isTerminated());
-
-
-            childOne.arrive();
-            childTwo.arrive();
-            childThree.arrive();
-
-            System.out.println("{6} Parent phaser RegisteredParties: " + parent.getRegisteredParties() +
-                    " UnarrivedParties: " + parent.getUnarrivedParties() + " ArrivedParties: " + parent.getArrivedParties() + " Phase: " +
-                    parent.getPhase() + " IsTerminated: " + parent.isTerminated());
-
-            System.out.println("{6} ChildOne phaser RegisteredParties: " + childOne.getRegisteredParties() +
-                    " UnarrivedParties: " + childOne.getUnarrivedParties() + " ArrivedParties: " + childOne.getArrivedParties() + " Phase: " +
-                    childOne.getPhase() + " IsTerminated: " + childOne.isTerminated());
-
-            System.out.println("{6} ChildTwo phaser RegisteredParties: " + childTwo.getRegisteredParties() +
-                    " UnarrivedParties: " + childTwo.getUnarrivedParties() + " ArrivedParties: " + childTwo.getArrivedParties() + " Phase: " +
-                    childTwo.getPhase() + " IsTerminated: " + childTwo.isTerminated());
-
-            System.out.println("{6} ChildThree phaser RegisteredParties: " + childThree.getRegisteredParties() +
-                    " UnarrivedParties: " + childThree.getUnarrivedParties() + " ArrivedParties: " + childThree.getArrivedParties() + " Phase: " +
-                    childThree.getPhase() + " IsTerminated: " + childThree.isTerminated());
-
-            childThree.arrive();
-            childTwo.arrive();
 
         }
+
+        {
+            System.out.println();
+            final Phaser parent = new Phaser(0) {
+                protected boolean onAdvance(int phase, int parties) {
+                    System.out.println("{7} Parent phaser OnAdvance phase: " + phase + " parties: " + parties);
+                    //return super.onAdvance(phase, parties);
+                    return false;
+                }
+            }, childLevelFirst = new Phaser(parent, 0){
+                protected boolean onAdvance(int phase, int parties) {
+                    System.out.println("{7} ChildLevelFirst phaser OnAdvance phase: " + phase + " parties: " + parties);
+                    return super.onAdvance(phase, parties);
+                }
+            },
+            childLevelFirstOne = new Phaser(parent, 1){
+                protected boolean onAdvance(int phase, int parties) {
+                    System.out.println("{7} ChildLevelFirst phaser OnAdvance phase: " + phase + " parties: " + parties);
+                    return super.onAdvance(phase, parties);
+                }
+            },
+            childLevelSecondOne = new Phaser(childLevelFirst, 1) {
+                protected boolean onAdvance(int phase, int parties) {
+                    System.out.println("{7} ChildLevelSecondOne phaser OnAdvance phase: " + phase + " parties: " + parties);
+                    return super.onAdvance(phase, parties);
+                }
+            }, childLevelSecondTwo = new Phaser(childLevelFirst, 1);
+
+
+           Thread myThread = new Thread(new Runnable() {
+               @Override
+               public void run() {
+                   try {
+                       childLevelSecondTwo.awaitAdvanceInterruptibly(childLevelSecondTwo.getPhase());
+                   } catch (InterruptedException e) {
+                       e.printStackTrace();
+                   }
+                   System.out.println("Thread: " + Thread.currentThread().getName() + " completed.");
+               }
+           });
+
+            myThread.start();
+
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            myThread.interrupt();
+
+            System.out.println("{7} Parent phaser RegisteredParties: " + parent.getRegisteredParties() +
+                    " UnarrivedParties: " + parent.getUnarrivedParties() + " ArrivedParties: " + parent.getArrivedParties() + " Phase: " +
+                    parent.getPhase() + " IsTerminated: " + parent.isTerminated());
+
+            System.out.println("{7} ChildLevelFirst phaser RegisteredParties: " + childLevelFirst.getRegisteredParties() +
+                    " UnarrivedParties: " + childLevelFirst.getUnarrivedParties() + " ArrivedParties: " + childLevelFirst.getArrivedParties() + " Phase: " +
+                    childLevelFirst.getPhase() + " IsTerminated: " + childLevelFirst.isTerminated());
+
+            System.out.println("{7} ChildLevelSecondOne phaser RegisteredParties: " + childLevelSecondOne.getRegisteredParties() +
+                    " UnarrivedParties: " + childLevelSecondOne.getUnarrivedParties() + " ArrivedParties: " + childLevelSecondOne.getArrivedParties() + " Phase: " +
+                    childLevelSecondOne.getPhase() + " IsTerminated: " + childLevelSecondOne.isTerminated());
+
+
+            System.out.println("{7} ChildLevelSecondTwo phaser RegisteredParties: " + childLevelSecondTwo.getRegisteredParties() +
+                    " UnarrivedParties: " + childLevelSecondTwo.getUnarrivedParties() + " ArrivedParties: " + childLevelSecondTwo.getArrivedParties() + " Phase: " +
+                    childLevelSecondTwo.getPhase() + " IsTerminated: " + childLevelSecondTwo.isTerminated());
+
+            try {
+                //parent.arrive();
+                //childLevelFirst.arriveAndDeregister();
+
+            }
+            catch (IllegalStateException e) {
+                System.out.println("{7} " + e.getMessage());
+            }
+        }
+
+        /*{
+            final Phaser phaser = new Phaser(1) {
+                protected boolean onAdvance(int phase, int parties) {
+                    System.out.println("{7} Parent phaser OnAdvance phase: " + phase + " parties: " + parties);
+                    return false;
+                }
+            };
+
+            phaser.arriveAndDeregister();
+            phaser.register();
+
+            System.out.println("{1} Phaser RegisteredParties: " + phaser.getRegisteredParties() +
+                    " UnarrivedParties: " + phaser.getUnarrivedParties() + " ArrivedParties: " + phaser.getArrivedParties() + " Phase: " +
+                    phaser.getPhase() + " IsTerminated: " + phaser.isTerminated());
+        }*/
+
 
         /*final Phaser parent = new Phaser(0), childOne = new Phaser(parent, 52535), childTwo = new Phaser(parent, 52535),  childThree = new Phaser(parent, 52535);
 
