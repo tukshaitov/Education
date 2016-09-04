@@ -1,4 +1,4 @@
-package edu.multithreading.executors;
+package edu.multithreading.Executors;
 
 import java.util.ArrayList;
 import java.util.List;
